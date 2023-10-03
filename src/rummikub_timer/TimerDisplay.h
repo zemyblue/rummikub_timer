@@ -45,8 +45,6 @@ void drawSettingTime(int x, int y, int setTime) {
   uint16_t w, h;
   char buffer[8];
   snprintf(buffer, 7, "%d min", setTime / 60);
-  // sprintf(buffer, "%d min", setTime/60);
-  // Serial.print("settime: "); Serial.println(buffer);
   // display.drawRect(x, y, SetTimeW, 8, WHITE);  // frame
 
   display.setTextSize(1);
@@ -65,8 +63,8 @@ void drawTimerbar(int x, int y, float percent) {
   const static int timerbarH = 10;
   display.drawRect(x, y, timerbarW, timerbarH, WHITE);
   int w = int((timerbarW - 2) * percent);
-  // Serial.print("percent: "); Serial.println(percent);
-  // Serial.print("width: "); Serial.println(w);
+  // Serial.print(F("percent: ")); Serial.println(percent);
+  // Serial.print(F("width: ")); Serial.println(w);
   display.fillRect(x + (timerbarW - w), y + 1, w, timerbarH - 2, WHITE);
 }
 

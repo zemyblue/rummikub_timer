@@ -21,12 +21,13 @@ int pinStartButton = 6;
 void muteBtnHandler();
 void timerSetBtnHandler();
 void startBtnHandler();
+void startBtnLongPressHandler();
 // end function prototypes
 
 PlayBuzzer buzzer(pinBUZZER);
 PushButton muteBtn(pinMuteButton, muteBtnHandler);
 PushButton timerBtn(pinTimerSetButton, timerSetBtnHandler);
-PushButton startBtn(pinStartButton, startBtnHandler);
+PushButton startBtn(pinStartButton, startBtnHandler, startBtnLongPressHandler);
 
 // setting data
 int settingTimeIdx = 0;
@@ -39,7 +40,7 @@ bool isRunning = false;
 
 void setup() {
   Serial.begin(9600);
-  Serial.println("Rummikub Timer");
+  Serial.println(F("Rummikub Timer"));
 
   if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
     Serial.println(F("SSD1306 allocation failed"));
@@ -65,7 +66,7 @@ void loop() {
     if (isRunning) {
       if (current >= 0) {
         drawTimerScreen(settingTime, current, !buzzer.isMute());
-        Serial.print("rest time: "); Serial.println(current);
+        Serial.print(F("rest time: ")); Serial.println(current);
 
         // play buzzer
         if (current == 0) {
@@ -96,7 +97,7 @@ void muteBtnHandler() {
 
   // redraw screen
   drawTimerScreen(settingTime, current, !buzzer.isMute());
-  Serial.print("Mute Button Pushed => "); Serial.println(buzzer.isMute());
+  Serial.print(F("Mute Button Pushed => ")); Serial.println(buzzer.isMute());
 }
 
 void timerSetBtnHandler() {
@@ -115,14 +116,26 @@ void timerSetBtnHandler() {
   // redraw screen
   drawTimerScreen(settingTime, current, !buzzer.isMute());
 
-  Serial.print("Timer Set Button Pushed =>"); Serial.println(settingTime);
+  Serial.print(F("Timer Set Button Pushed =>")); Serial.println(settingTime);
 }
 
 void startBtnHandler() {
-  Serial.println("Start Button Pushed");
+  Serial.println(F("Start Button Pushed"));
 
   buzzer.stop();
   isRunning = true;
+  current = settingTime;
+
+  // redraw screen
+  drawTimerScreen(settingTime, current, !buzzer.isMute());
+}
+
+void startBtnLongPressHandler() {
+  Serial.println(F("Start Button Long Press Pushed"));
+
+  // stop timer
+  buzzer.stop();
+  isRunning = false;
   current = settingTime;
 
   // redraw screen

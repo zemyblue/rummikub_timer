@@ -21,10 +21,6 @@ void PlayBuzzer::playTone(int melody, unsigned long duration) {
 
 void PlayBuzzer::loop() {
   if (!_isMute && _isPlaying && _delay.justFinished()) {
-    // _delay.stop();
-    // noTone(_buzzerPin);
-    // _isPlaying = false;
-    // Serial.println(F("Buzzer end"));
     _reset();
   }
 }
