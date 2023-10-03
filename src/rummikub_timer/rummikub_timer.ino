@@ -1,9 +1,15 @@
 // reference: https://github.com/hibit-dev/buzzer/tree/master/lib
 #include <pitches.h>
 #include <millisDelay.h>
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
 #include "PlayBuzzer.h"
+#include "TimerDisplay.h"
 
-int buzzer = 9;
+#define TIMER_INTERVAL_MS    2000
+
+int BUZZERPIN = 9;
 
 int timer_melody[] = {
   NOTE_F4,10,
@@ -12,84 +18,60 @@ int timer_melody[] = {
   NOTE_B5,5
 };
 
-// about buzzer codes
-// int duration = 1;
-// int divider = 0, noteDuration = 0;
+PlayBuzzer buzzer(BUZZERPIN);
 
-// millisDelay buzzerDelay;
-// bool buzzerOn = false;
-// int buzzerNote = 0;
-// int notes = sizeof(timer_melody) / sizeof(int) / 2;
+// setting data
+int settingTime = 20;
+int current = settingTime;
 
-// void playTone() {
-//   // start timer buzzer
-//   divider = timer_melody[buzzerNote + 1];
-//   noteDuration = 20000 / divider;
-
-//   // play the note for 40% of the duration, leaving 60% as a pause.
-//   tone(buzzer, timer_melody[buzzerNote], noteDuration * 0.4);
-
-//   // Wait for the specief duration before playing the next note.
-//   buzzerDelay.start(noteDuration);
-// }
-
-// bool runTimerBuzzer() {
-//   if (buzzerDelay.justFinished()) {
-//     // stop the waveform generation before the next note.
-//     noTone(buzzer);
-
-//     buzzerNote += 2;
-//     if (buzzerNote >= notes * 2) {
-//       buzzerDelay.stop();
-//       buzzerNote = 0;
-//       buzzerOn = false;
-//       Serial.println("Buzzer end");
-//       return false;
-//     }
-
-//     playTone();
-//     Serial.print("Note["); Serial.print(buzzerNote); Serial.println("] finish");
-//   }
-  
-//   if (!buzzerOn) {
-//     playTone();
-//     Serial.println("start timer buzzer");
-
-//     buzzerOn = true;
-//   }
-
-//   return true;
-// }
-
-PlayBuzzer timerBuzzer(buzzer, timer_melody, sizeof(timer_melody) / sizeof(int) / 2);
+// state data
+bool isSoundOn = true;
+bool isRunning = true;
 
 
 void setup() {
   Serial.begin(9600);
-  Serial.println("buzzer test");
+  Serial.println("Rummikub Timer");
 
-  // int notes = sizeof(timer_melody) / sizeof(int) / 2;
-  // for (int thisNote = 0; thisNote < notes * 2; thisNote = thisNote + 2) {
-  //   divider = timer_melody[thisNote + 1];
-  //   noteDuration = 20000 / divider;
+  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+    Serial.println(F("SSD1306 allocation failed"));
+    for(;;);
+  }
 
-  //   Serial.println(noteDuration);
-  //   tone(buzzer, timer_melody[thisNote], noteDuration * 0.4);
-
-  //   delay(noteDuration);
-
-  //   noTone(buzzer);
-  // }
-
-  // Serial.println("END");
+  // draw init screen
+  drawTimerScreen(settingTime, current, isSoundOn);
 }
 
-bool isPlaying = true;
 void loop() {
-  if (isPlaying) {
-    // if (!runTimerBuzzer()) {
-    if (!timerBuzzer.play()) {
-      isPlaying = false;
+  static uint32_t lastTime = 0;
+  static uint32_t currTime;
+
+  currTime = millis();
+  if (currTime - lastTime > TIMER_INTERVAL_MS) {
+    lastTime = currTime;
+
+    if (isRunning) {
+      if (current >= 0) {
+        drawTimerScreen(settingTime, current, isSoundOn);
+        Serial.print("rest time: "); Serial.println(current);
+
+        // play buzzer
+        if (current == 0) {
+          buzzer.playTone(NOTE_B5, 2000);
+        } else if (current < 10) {
+          buzzer.playTone(NOTE_B4, 600);
+        } else if (current < 30) {
+          buzzer.playTone(NOTE_A3, 200);
+        }
+
+        current--;
+      } else {
+        // stop && reset
+        isRunning = false;
+        current = settingTime;
+      }
     }
   }
+
+  buzzer.loop();
 }
