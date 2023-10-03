@@ -5,33 +5,59 @@
 #include "PlayBuzzer.h"
 
 PlayBuzzer::PlayBuzzer(int pin) {
-  m_buzzerPin = pin;
+  _buzzerPin = pin;
 }
 
 void PlayBuzzer::playTone(int melody, unsigned long duration) {
-  tone(m_buzzerPin, melody, duration);
-  m_delay.start(duration);
-  m_isPlaying = true;
+  if (_isMute) {
+    return;
+  }
+
+  tone(_buzzerPin, melody, duration);
+  _delay.start(duration);
+  _isPlaying = true;
   Serial.print(F("Buzzer play")); Serial.println(melody);
 }
 
 void PlayBuzzer::loop() {
-  if (m_isPlaying && m_delay.justFinished()) {
-    m_delay.stop();
-    noTone(m_buzzerPin);
-    m_isPlaying = false;
-    Serial.println(F("Buzzer end"));
+  if (!_isMute && _isPlaying && _delay.justFinished()) {
+    // _delay.stop();
+    // noTone(_buzzerPin);
+    // _isPlaying = false;
+    // Serial.println(F("Buzzer end"));
+    _reset();
   }
 }
 
 bool PlayBuzzer::isPlaying() {
-  return m_isPlaying;
+  return _isPlaying;
 }
 
 void PlayBuzzer::stop()
 {
-  if (m_isPlaying) {
-    noTone(m_buzzerPin);
-    m_delay.stop();
+  if (_isPlaying) {
+    noTone(_buzzerPin);
+    _delay.stop();
   }
+}
+
+void PlayBuzzer::_reset() {
+  if (_isPlaying) {
+    _delay.stop();
+    noTone(_buzzerPin);
+    _isPlaying = false;
+    Serial.println(F("Buzzer end"));
+  }
+}
+
+void PlayBuzzer::setMute(bool mute) {
+  _isMute = mute;
+
+  if (mute) {
+    _reset();
+  }
+}
+
+bool PlayBuzzer::isMute() {
+  return _isMute;
 }

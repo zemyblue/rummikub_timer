@@ -12,10 +12,16 @@ class PlayBuzzer {
     void stop();
     bool isPlaying();
 
+    void setMute(bool mute);
+    bool isMute();
+
   private:
-    int m_buzzerPin;
-    bool m_isPlaying;
-    millisDelay m_delay;
+    int _buzzerPin;
+    bool _isPlaying;
+    bool _isMute;
+    millisDelay _delay;
+
+    void _reset();
 };
 
 #endif // PlayBuzzer_h
