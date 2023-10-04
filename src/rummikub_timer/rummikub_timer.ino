@@ -48,7 +48,17 @@ void setup() {
   }
 
   // draw init screen
-  drawTimerScreen(settingTime, current, !buzzer.isMute());
+  display.clearDisplay();
+  display.setTextSize(2);
+  display.setTextColor(WHITE);
+  display.setCursor(20, 10);
+  display.println(F("Rummikub"));
+  display.setCursor(36, 30);
+  display.println(F("Timer"));
+  display.setTextSize(1);
+  display.setCursor(4, 54);
+  display.println("by zemyblue   v1.0.0");
+  display.display();
 }
 
 void loop() {
