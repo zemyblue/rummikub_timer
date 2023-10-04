@@ -65,7 +65,7 @@ void drawTimerbar(int x, int y, float percent) {
   int w = int((timerbarW - 2) * percent);
   // Serial.print(F("percent: ")); Serial.println(percent);
   // Serial.print(F("width: ")); Serial.println(w);
-  display.fillRect(x + (timerbarW - w), y + 1, w, timerbarH - 2, WHITE);
+  display.fillRect(x + (timerbarW - w - 1), y + 1, w, timerbarH - 2, WHITE);
 }
 
 // display sound setting
