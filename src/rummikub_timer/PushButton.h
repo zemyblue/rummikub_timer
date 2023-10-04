@@ -1,7 +1,7 @@
 #ifndef PushButton_h
 #define PushButton_h
 
-#define LONGPRESS_TIME 3000
+#define LONGPRESS_TIME 2000
 
 typedef void (*pushBtn_handler)();
 

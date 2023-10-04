@@ -9,8 +9,8 @@
 #include "PushButton.h"
 
 #define TIMER_INTERVAL_MS    2000
-static const int Timers[] = {60, 180, 300, 600, 1800, 3000, 3600};
-static const int TimersSize = 7;
+static const int Timers[] = {60, 120, 180, 240, 300, 360, 600, 1800, 3000, 3600};
+static const int TimersSize = sizeof(Timers) / sizeof(int);
 
 int pinBUZZER = 9;
 int pinMuteButton = 4;
@@ -71,6 +71,8 @@ void loop() {
         // play buzzer
         if (current == 0) {
           buzzer.playTone(NOTE_B5, 2000);
+        } else if (current < 5) {
+          buzzer.playTone(NOTE_F5, 600);
         } else if (current < 10) {
           buzzer.playTone(NOTE_B4, 600);
         } else if (current < 20) {
@@ -125,6 +127,9 @@ void startBtnHandler() {
   buzzer.stop();
   isRunning = true;
   current = settingTime;
+
+  // start sound
+  buzzer.playTone(NOTE_C3, 200);
 
   // redraw screen
   drawTimerScreen(settingTime, current, !buzzer.isMute());
